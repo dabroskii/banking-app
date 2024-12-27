@@ -1,2 +1,2 @@
 # banking-app
-testing development
+a web app to test integration of java springboot backend and reactjs frontend
