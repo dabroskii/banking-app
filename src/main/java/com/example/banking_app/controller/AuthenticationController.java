@@ -16,6 +16,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+
 @RestController
 @RequestMapping("/auth")
 public class AuthenticationController {
@@ -34,6 +36,8 @@ public class AuthenticationController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthRequest authRequest) {
+        System.out.println("Login request received for username: " + authRequest.getUsername());
+
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -46,12 +50,13 @@ public class AuthenticationController {
                     .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
             String token = jwtTokenProvider.generateToken(user.getUsername(), user.getRoles());
-
             return ResponseEntity.ok(new AuthResponse(token));
         } catch (Exception e) {
+            System.out.println("Login failed: " + e.getMessage());
             return ResponseEntity.status(401).body("Invalid credentials");
         }
     }
+
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest registerRequest) {
@@ -75,5 +80,28 @@ public class AuthenticationController {
 
         return ResponseEntity.ok("User registered successfully!");
     }
+
+    @PutMapping("/update")
+    public ResponseEntity<?> updateUserDetails(@RequestBody User updatedUser, Principal principal) {
+        // Get the authenticated user's username
+        String username = principal.getName();
+
+        // Find the current user
+        User existingUser = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        // Update user details
+        existingUser.setFirstName(updatedUser.getFirstName());
+        existingUser.setLastName(updatedUser.getLastName());
+        existingUser.setEmail(updatedUser.getEmail());
+        existingUser.setAddress(updatedUser.getAddress());
+        existingUser.setOptIntoPhyStatements(updatedUser.getOptIntoPhyStatements());
+
+        // Save the updated user
+        userRepository.save(existingUser);
+
+        return ResponseEntity.ok("User details updated successfully!");
+    }
+
 }
 

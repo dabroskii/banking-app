@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/transactions")
@@ -23,12 +24,24 @@ public class ScheduledTransactionController {
 
     @GetMapping("/{accountId}")
     public ResponseEntity<?> getTransactions(@PathVariable Long accountId) {
-        BankAccount account = bankAccountRepository.findById(accountId)
-                .orElseThrow(() -> new IllegalArgumentException("Account not found"));
+        System.out.println("Fetching transactions for accountId: " + accountId);
+
+        Optional<BankAccount> accountOpt = bankAccountRepository.findById(accountId);
+        if (accountOpt.isPresent()) {
+            System.out.println("Found account: " + accountOpt.get());
+        } else {
+            System.err.println("No account found for accountId: " + accountId);
+        }
+
+        BankAccount account = accountOpt.orElseThrow(() -> new IllegalArgumentException("Account not found"));
 
         List<ScheduledTransaction> transactions = transactionRepository.findByAccount(account);
+        System.out.println("Found transactions: " + transactions);
+
         return ResponseEntity.ok(transactions);
     }
+
+
 
     @PostMapping("/{accountId}")
     public ResponseEntity<?> createTransaction(@PathVariable Long accountId, @RequestBody ScheduledTransaction transaction) {

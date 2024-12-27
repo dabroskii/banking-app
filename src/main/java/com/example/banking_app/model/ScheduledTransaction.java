@@ -11,19 +11,15 @@ public class ScheduledTransaction {
     private Long transactionId;
 
     @ManyToOne
-    @JoinColumn(name = "accountId", nullable = false)
+    @JoinColumn(name = "AccountID", nullable = false) // Match the exact case from MySQL
     private BankAccount account;
 
     private Long receivingAccountId;
-
     private Date date;
-
     private Double transactionAmount;
-
     private String comment;
 
     // Getters and setters...
-
     public Long getTransactionId() {
         return transactionId;
     }

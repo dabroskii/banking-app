@@ -1,25 +1,21 @@
 package com.example.banking_app.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 
 @Entity
 public class BankAccount {
     @Id
+    @Column(name = "AccountID") // Match the exact case from MySQL
     private Long accountId;
 
     @ManyToOne
-    @JoinColumn(name = "userId", nullable = false)
+    @JoinColumn(name = "UserID", nullable = false) // Match the exact case for the foreign key
     private User user;
 
     private String accountType;
-
     private Double accountBalance;
 
-    // Getters and setters...
-
+    // Getters and Setters
     public Long getAccountId() {
         return accountId;
     }
@@ -52,4 +48,3 @@ public class BankAccount {
         this.accountBalance = accountBalance;
     }
 }
-
